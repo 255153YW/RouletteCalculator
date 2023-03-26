@@ -1,16 +1,13 @@
 package com.example.roulettecalculator
 
-import android.content.Context
-import android.content.Context.INPUT_METHOD_SERVICE
-import android.inputmethodservice.InputMethodService
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
-import androidx.core.content.ContextCompat.getSystemService
+import android.widget.Toast
+import androidx.core.text.isDigitsOnly
 import androidx.navigation.fragment.findNavController
 import com.example.roulettecalculator.DAO.RouletteNumber
 import com.example.roulettecalculator.DAO.RouletteTable
@@ -31,7 +28,7 @@ class FirstFragment : Fragment() {
 
     private val rouletteTable = RouletteTable()
 
-    private val rouletteStrategy = RouletteStrategy()
+    private val rouletteStrategy = RouletteStrategy().strategy[2]
 
     private val playedNumber = mutableListOf<RouletteNumber>()
 
@@ -71,21 +68,19 @@ class FirstFragment : Fragment() {
     }
 
     private fun addPlayedNumber (view:View) {
-        val intValue = binding.editTextNumber.text.toString().toInt();
-        if(intValue in 0..36) {
-            playedNumber.add(rouletteTable.table.elementAt(intValue))
-            binding.editTextNumber.setText("")
+        var editTextValueString = binding.editTextNumber.text.toString()
+        if(editTextValueString.isEmpty() || editTextValueString.isBlank() || !editTextValueString.isDigitsOnly()) {
+            editTextValueString = "-1"
         }
-        binding.textViewAttemptCount.text = playedNumber.count().toString()
-
-        val mListView = binding.playedNumberList
-        mListView.adapter = PlayedNumbersListViewAdapter(android.R.layout.simple_list_item_1, playedNumber)
-
-//        view.clearFocus()
-//        val imm = getSystemService(view.context, InputMethodService::class.java) as? InputMethodManager
-//        imm?.hideSoftInputFromWindow(view.windowToken, 0)
-//        val inputMethodManager = getSystemService(requireContext().applicationContext,InputMethodService::class.java) as InputMethodManager
-//        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
-
+        val editTextValueInt = editTextValueString.toInt();
+        if(editTextValueInt in 0..36) {
+            playedNumber.add(rouletteTable.table.elementAt(editTextValueInt))
+            binding.editTextNumber.setText("")
+            binding.textViewAttemptCount.text = playedNumber.count().toString()
+            val mListView = binding.playedNumberList
+            mListView.adapter = PlayedNumbersListViewAdapter(android.R.layout.simple_list_item_1, playedNumber)
+        } else{
+            Toast.makeText(requireContext().applicationContext, "invalid number entered", Toast.LENGTH_SHORT).show()
+        }
     }
 }
