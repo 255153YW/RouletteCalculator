@@ -5,7 +5,7 @@ import com.example.roulettecalculator.DAO.strategies.BlackSnakeHalf
 import com.example.roulettecalculator.DAO.strategies.Red
 import com.example.roulettecalculator.DAO.strategies.Strategy
 
-class RouletteStrategy {
+class RouletteStrategyList {
     val strategy = listOf<Strategy>(
         Red(),
         Black(),

@@ -1,6 +1,7 @@
 package com.example.roulettecalculator.DAO.strategies
 
 class Red : Strategy() {
+    override val strategyName = "red"
     override val selectedNumbers = listOf(
         rouletteTable.numbersOnTable.elementAt(1),
         rouletteTable.numbersOnTable.elementAt(3),

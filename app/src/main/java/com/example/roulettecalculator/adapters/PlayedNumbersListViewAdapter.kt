@@ -13,7 +13,7 @@ import com.example.roulettecalculator.R
 
 class PlayedNumbersListViewAdapter(
     private val templateLayout: Int,
-    private val playedNumberList: MutableList<RouletteNumber>
+    private val playedNumberList: List<RouletteNumber>
 ) : BaseAdapter() {
 
     private val lastClicked = ""
