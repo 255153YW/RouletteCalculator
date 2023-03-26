@@ -28,10 +28,11 @@ class FirstFragment : Fragment() {
 
     private val rouletteTable = RouletteTable()
 
-    private val rouletteStrategy = RouletteStrategy().strategy[2]
+    private val selectedNumbers = RouletteStrategy().strategy[2].selectedNumbers
 
-    private val playedNumber = mutableListOf<RouletteNumber>()
+    private val playedNumberList = mutableListOf<RouletteNumber>()
 
+    private var lastWinIndex = 0
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
@@ -50,7 +51,7 @@ class FirstFragment : Fragment() {
         binding.editTextNumber.setOnEditorActionListener { v, actionId, event ->
             return@setOnEditorActionListener when (actionId) {
                 EditorInfo.IME_ACTION_SEND -> {
-                    addPlayedNumber(view)
+                    addPlayedNumber()
                     true
                 }
                 else -> false
@@ -67,20 +68,36 @@ class FirstFragment : Fragment() {
         _binding = null
     }
 
-    private fun addPlayedNumber (view:View) {
+    private fun addPlayedNumber () {
         var editTextValueString = binding.editTextNumber.text.toString()
         if(editTextValueString.isEmpty() || editTextValueString.isBlank() || !editTextValueString.isDigitsOnly()) {
             editTextValueString = "-1"
         }
         val editTextValueInt = editTextValueString.toInt();
         if(editTextValueInt in 0..36) {
-            playedNumber.add(rouletteTable.table.elementAt(editTextValueInt))
+            val rouletteNumberPlayed = rouletteTable.table.elementAt(editTextValueInt)
+            playedNumberList.add(rouletteNumberPlayed)
             binding.editTextNumber.setText("")
-            binding.textViewAttemptCount.text = playedNumber.count().toString()
             val mListView = binding.playedNumberList
-            mListView.adapter = PlayedNumbersListViewAdapter(android.R.layout.simple_list_item_1, playedNumber)
+            mListView.adapter = PlayedNumbersListViewAdapter(android.R.layout.simple_list_item_1, playedNumberList)
+            checkNumberWithStrategy(rouletteNumberPlayed)
         } else{
             Toast.makeText(requireContext().applicationContext, "invalid number entered", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun checkNumberWithStrategy (rouletteNumberPlayed:RouletteNumber) {
+        val playedNumberListCount = playedNumberList.count()
+        var attemptCount = playedNumberListCount.toString()
+        val isNumberPlayedWin = selectedNumbers.any { it.number === rouletteNumberPlayed.number }
+        val currentIndex = playedNumberListCount - 1
+        if(isNumberPlayedWin) {
+            attemptCount = "0"
+            lastWinIndex = currentIndex + 1
+        } else{
+            val slicedList = playedNumberList.slice(lastWinIndex..currentIndex)
+            attemptCount = slicedList.count().toString()
+        }
+        binding.textViewAttemptCount.text = attemptCount
     }
 }
