@@ -28,9 +28,20 @@ class FirstFragment : Fragment() {
 
     private val rouletteTable = RouletteTable()
 
-    private val selectedNumbers = RouletteStrategy().strategy[2].selectedNumbers
+    private val selectedStrategy = RouletteStrategy().strategy[2]
 
     private val playedNumberList = mutableListOf<RouletteNumber>()
+
+    private var selectedNumbers = selectedStrategy.selectedNumbers
+
+    private var selectedNumbersCount = selectedNumbers.count()
+    private var numbersOnTableCount = rouletteTable.numbersOnTable.count()
+
+    private var winChance = (selectedNumbersCount.toDouble()/numbersOnTableCount.toDouble())
+    private var loseChance = ((numbersOnTableCount.toDouble()-selectedNumbersCount.toDouble())/numbersOnTableCount.toDouble())
+
+    private var winChanceCumulative = winChance
+    private var loseChanceCumulative = loseChance
 
     private var lastWinIndex = 0
 
@@ -58,6 +69,8 @@ class FirstFragment : Fragment() {
             }
         }
 
+        setWinLoseChance(winChanceCumulative, loseChanceCumulative)
+
         binding.buttonReset.setOnClickListener {
             findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
         }
@@ -75,7 +88,7 @@ class FirstFragment : Fragment() {
         }
         val editTextValueInt = editTextValueString.toInt();
         if(editTextValueInt in 0..36) {
-            val rouletteNumberPlayed = rouletteTable.table.elementAt(editTextValueInt)
+            val rouletteNumberPlayed = rouletteTable.numbersOnTable.elementAt(editTextValueInt)
             playedNumberList.add(rouletteNumberPlayed)
             binding.editTextNumber.setText("")
             val mListView = binding.playedNumberList
@@ -88,16 +101,33 @@ class FirstFragment : Fragment() {
 
     private fun checkNumberWithStrategy (rouletteNumberPlayed:RouletteNumber) {
         val playedNumberListCount = playedNumberList.count()
-        var attemptCount = playedNumberListCount.toString()
+        var attemptCount = "0"
         val isNumberPlayedWin = selectedNumbers.any { it.number === rouletteNumberPlayed.number }
         val currentIndex = playedNumberListCount - 1
+        calculateWinLoseChanceCumulative(isNumberPlayedWin)
         if(isNumberPlayedWin) {
-            attemptCount = "0"
             lastWinIndex = currentIndex + 1
+            Toast.makeText(requireContext().applicationContext, "!!!WIN!!!", Toast.LENGTH_SHORT).show()
         } else{
             val slicedList = playedNumberList.slice(lastWinIndex..currentIndex)
             attemptCount = slicedList.count().toString()
         }
         binding.textViewAttemptCount.text = attemptCount
+    }
+
+    private fun calculateWinLoseChanceCumulative (isNumberPlayedWin:Boolean) {
+        if(isNumberPlayedWin) {
+            winChanceCumulative = winChance
+            loseChanceCumulative = loseChance
+        } else {
+            loseChanceCumulative *= loseChance
+            winChanceCumulative = 1-loseChanceCumulative
+        }
+        setWinLoseChance(winChanceCumulative, loseChanceCumulative)
+    }
+
+    private fun setWinLoseChance(winChanceCumulative: Double, loseChanceCumulative: Double) {
+        binding.textViewWinChance.text = (winChanceCumulative*100).toString()
+        binding.textViewLoseChance.text = (loseChanceCumulative*100).toString()
     }
 }

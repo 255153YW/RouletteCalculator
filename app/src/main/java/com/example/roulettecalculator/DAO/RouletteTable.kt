@@ -6,7 +6,7 @@ class RouletteTable {
     private val colorGreen = R.color.green
     private val colorRed = R.color.red
     private val colorBlack = R.color.black
-    val table = listOf(
+    val numbersOnTable = listOf(
         RouletteNumber(0, colorGreen),
         RouletteNumber(1,colorRed),
         RouletteNumber(2,colorBlack),
