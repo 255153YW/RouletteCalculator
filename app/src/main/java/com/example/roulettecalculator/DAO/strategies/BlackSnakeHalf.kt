@@ -9,9 +9,9 @@ class BlackSnakeHalf : Strategy() {
         rouletteTable.numbersOnTable.elementAt(13),
         rouletteTable.numbersOnTable.elementAt(17),
         rouletteTable.numbersOnTable.elementAt(20),
-        rouletteTable.numbersOnTable.elementAt(19),
-        rouletteTable.numbersOnTable.elementAt(22),
         rouletteTable.numbersOnTable.elementAt(26),
         rouletteTable.numbersOnTable.elementAt(29),
+        rouletteTable.numbersOnTable.elementAt(28),
+        rouletteTable.numbersOnTable.elementAt(31),
     )
 }
