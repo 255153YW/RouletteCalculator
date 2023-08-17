@@ -7,6 +7,7 @@ class RouletteStrategyList {
         Red(),
         Black(),
         BlackSnakeHalf(),
-        RedSnakeHalf()
+        RedSnakeHalf(),
+        Zero()
     )
 }
